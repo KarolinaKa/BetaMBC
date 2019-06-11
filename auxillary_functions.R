@@ -22,22 +22,28 @@ simulate_beta <-
            location,
            scale,
            groups = 3) {
-  # Returns random draws from the reparametrised beta density.
-  #
-  # Args: 
-  #   N: number of draws required.
-  #   mixing_proportions: mixing proportions vector of length groups.
-  #   location: mode vector of length groups.
-  #   scale: spread parameter (analagous to variance in Gaussian setting) vector of length groups.
-  #   groups: number of groups.
-  # Returns: 
-  #   Vector of components.
-  #   Random draws from the reparametrised beta density.
+    # Returns random draws from the reparametrised beta density.
+    #
+    # Args:
+    #   N: number of draws required.
+    #   mixing_proportions: mixing proportions vector of length groups.
+    #   location: mode vector of length groups.
+    #   scale: spread parameter (analagous to variance in Gaussian setting) vector of length groups.
+    #   groups: number of groups.
+    # Returns:
+    #   Vector of components.
+    #   Random draws from the reparametrised beta density.
     
     # error handling
-    if (length(mixing_proportions) != groups) stop(paste("mixing_proportions must have length", groups))
-    if (length(location) != groups) stop(paste("location must have length", groups))
-    if (length(scale) != groups) stop(paste("scale must have length", groups))
+    if (sum(mixing_proportions) != 1 ) {
+      stop("Vector of mixing proportions must sum to 1.")
+    }
+    if (any(location < 0 | location > 1)) {
+      stop("Entries in the location vector must be between 0 and 1.")
+    }
+    if (any(scale < 0)) {
+      stop("Entries in the scale vector must be greater than 0.")
+    }
     
     components <-
       sample(1:groups,
@@ -61,7 +67,6 @@ dbeta.rep <-
     #   scale: spread parameter (analagous to variance in Gaussian setting).
     # Returns: 
     #   Reparametrised beta distribution density.
-    
     dbeta(x, location / scale + 1, (1 - location) / scale + 1)
   }
 
