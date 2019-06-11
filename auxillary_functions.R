@@ -10,6 +10,7 @@
 ## Other functions                          ##  
 ##                                          ##
 ##  1. adjusted_rand                        ##
+##  3. permute_me                           ##
 ##                                          ##
 ## author: karolina.kulec@ucdconnect.ie     ##
 ## date: June 2019                          ##
@@ -179,7 +180,7 @@ adjusted_rand <- function(table) {
   numerator / denominator
 }
 
-permutation <- function(x) {
+permute_me <- function(x) {
   # Calculates all vector permutations.
   #
   # Args:
