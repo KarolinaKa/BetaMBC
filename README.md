@@ -1,13 +1,15 @@
-# BetaMBC
+BetaMBC
+-----
 
 Model based clustering.
-Finite mixtures of unimodal beta distributions. 
+Finite mixtures of unimodal beta distributions (univariate for now). 
 EM Algorithm. 
 
 Usage
 -----
 
 Simulate the desired mixture in `simulation.R`. 
+Follow the example below to calculate density estimates and the clustering solution. 
 
 ```r
 # Example ///
