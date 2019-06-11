@@ -8,7 +8,7 @@ EM Algorithm.
 Usage
 -----
 
-Simulate the desired mixture in `simulation.R`. 
+Simulate the desired mixture in `simulation.R`. Note default number of groups is 3. 
 Follow the example below to calculate density estimates and the clustering solution. 
 
 ```r
