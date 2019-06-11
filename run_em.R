@@ -4,15 +4,7 @@
 ## date: June 2019                          ##
 ##############################################
 
-source("auxillary_functions.R")
-
-# Simulate some data 
-simulation <- simulate_beta(
-  N = 1000,
-  mixing_proportions = c(0.5, 0.2, 0.3),
-  location = c(0.1, 0.5, 0.9),
-  scale = c(0.03, 0.03, 0.04)
-)
+source("simulation.R")
 
 run_em <- function(data,
                    groups = 3,
@@ -124,7 +116,8 @@ run_em <- function(data,
       "AIC" = AIC, 
       "BIC" = BIC,
       "LogLikelihood" = log_likelihood,
-      "ClassProbabilities" = z
+      "ClassProbabilities" = z,
+      "Data" = data
     )
   class(output) <- "BetaEM"
   return(output)
