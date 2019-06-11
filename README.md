@@ -15,11 +15,11 @@ Follow the example below to calculate density estimates and the clustering solut
 # Example ///
 
 source("run_em_S3.R")
-x <- run_em(data = simulation$simulated_data)
+x <- run_em(simulation$simulated_data)
 
 summary(x) 
 plot(x)
-beta_clus(x)
+beta_clus(x, simulation$components)
 
 ```
 
