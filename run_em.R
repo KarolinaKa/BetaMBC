@@ -8,7 +8,7 @@ source("simulation.R")
 
 run_em <- function(data,
                    groups,
-                   max_iterations = 100,
+                   max_iterations = 200,
                    convergence_limit = 1e-05,
                    random_initialisation_runs = 50) {
   # Runs the EM algorithm for a finite mixture of unimodal beta distributions.
@@ -49,7 +49,9 @@ run_em <- function(data,
     log_likelihood[2] <-
       -max_me(theta, data = data, groups = groups)
     
-    stopifnot(log_likelihood[2] > log_likelihood[1])
+    if (log_likelihood[2] < log_likelihood[1]) {
+      warning("Convergence to local maximum.")
+    }
 
     iterations <- 2  # 1 + initial values
     
@@ -160,17 +162,15 @@ run_em <- function(data,
     )
   }
   
-  class(output) <- "BetaEM"
-  
   cat('Object of class "BetaEM" \n')
   cat('======================== \n')
   cat('Available components \n')
   print(names(output))
   
+  class(output) <- "BetaEM"
   return(output)
 }
 
-test_run <- run_em(test_data, groups = 1)
 
 # use microbenchmark to benchmark the function 
 
