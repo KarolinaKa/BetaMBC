@@ -6,11 +6,13 @@
 ##  3. initialise_me                        ##
 ##  4. location_constraint and its inverse  ##
 ##  5. max_me                               ##  
+##  6. simulate_p_betas (generalisation of  ## 
+##                       simulate_beta)     ## 
 ##                                          ##
 ## Other functions                          ##  
 ##                                          ##
 ##  1. adjusted_rand                        ##
-##  3. permute_me                           ##
+##  2. permute_me                           ##
 ##                                          ##
 ## author: karolina.kulec@ucdconnect.ie     ##
 ## date: June 2019                          ##
@@ -21,7 +23,7 @@ simulate_beta <-
            mixing_proportions,
            location,
            scale,
-           groups = 3) {
+           groups) {
     # Returns random draws from the reparametrised beta density.
     #
     # Args:
@@ -35,6 +37,8 @@ simulate_beta <-
     #   Random draws from the reparametrised beta density.
     
     # error handling
+    stopifnot(all(length(mixing_proportions) == groups, length(location) == groups, length(scale) == groups))
+    
     if (sum(mixing_proportions) != 1 ) {
       stop("Vector of mixing proportions must sum to 1.")
     }
@@ -45,14 +49,18 @@ simulate_beta <-
       stop("Entries in the scale vector must be greater than 0.")
     }
     
-    components <-
-      sample(1:groups,
-             prob = mixing_proportions,
-             size = N,
-             replace = TRUE)
-    simulated_data <-
-      rbeta(N, location[components] / scale[components] + 1, (1 - location[components]) / scale[components] + 1)
-    list(components = components, simulated_data = simulated_data)
+    if (groups == 1) {
+      simulated_data <- rbeta(N, location / scale + 1, (1 - location) / scale + 1)
+    } else {
+      components <-
+        sample(1:groups,
+               prob = mixing_proportions,
+               size = N,
+               replace = TRUE)
+      simulated_data <-
+        rbeta(N, location[components] / scale[components] + 1, (1 - location[components]) / scale[components] + 1)
+      list(components = components, simulated_data = simulated_data)
+    }
   }
 
 dbeta.rep <-
@@ -72,7 +80,7 @@ dbeta.rep <-
 
 initialise_me <- function(data,
                           random_runs,
-                          groups = 3,
+                          groups,
                           scale_min = 0.01,
                           scale_max = 0.9) {
   # Random initialisation function for the EM algorithm.
@@ -113,7 +121,11 @@ initialise_me <- function(data,
   final_mixing_proportions <- mixing_proportions[, , index]
   final_theta <- theta[, , index]
   
-  output <- list(final_theta, final_mixing_proportions)
+  if (groups == 1) {
+    output <- final_theta
+  } else {
+    output <- list(final_theta, final_mixing_proportions)
+  }
 }
 
 # use microbenchmark to benchmark the function 
@@ -142,27 +154,38 @@ inv_location_constraint <- function(x) {
   tan((x - 1 / 2) * pi)
 }
 
-max_me <- function(theta, data, z, groups = 3) {
+max_me <- function(theta, data, groups, z) {
   # Defines the objective function to be maximised.
   #
-  # Args: 
+  # Args:
   #   theta: vector of parameters to be maximised over.
-  #   data: data vector generated using a finitie mixture of unimodal beta distributions. 
+  #   data: data vector generated using a finitie mixture of unimodal beta distributions.
   #   z: (N x groups) posterior probability matrix.
-  #   groups: number of components/groups in the mixture. 
-  # Returns: 
+  #   groups: number of components/groups in the mixture.
+  # Returns:
   #   Negative objective function output (because optim minimises by default).
   
-  ind <-
-    sum(sapply(1:groups, function(j)
-      z[, j] %*% log(
+  if (groups == 1) {
+    ind <-
+      sum(log(
         dbeta.rep(
           data,
-          location = location_constraint(theta[2 * j - 1]),
-          scale = exp(theta[2 * j])
+          location = location_constraint(theta[1]),
+          scale = exp(theta[2])
         )
-      )))
-  return(-ind)                            
+      ))
+  } else {
+    ind <-
+      sum(sapply(1:groups, function(j)
+        z[, j] %*% log(
+          dbeta.rep(
+            data,
+            location = location_constraint(theta[2 * j - 1]),
+            scale = exp(theta[2 * j])
+          )
+        )))
+  }
+  return(-ind)
 }
 
 adjusted_rand <- function(table) {
@@ -203,4 +226,51 @@ permute_me <- function(x) {
   
   as.matrix(permutation_matrix)
 }
+
+simulate_p_betas <- function(N, mixing_proportions, location, scale) {
+  #### Not currently used ####
+  # Simulates data from p univariate mixtures of unimodal beta distributions.
+  #
+  # Args: 
+  #   N: number of rows to simulate from each mixture. 
+  #   p*: number of mixtures.  
+  #   groups*: number of components/groups in each mixture. This is assumed constant for each mixture. 
+  #   mixing_proportions: a (p x groups) matrix of mixing proportions for each mixture. 
+  #   location: a (p x groups) matrix of locations for each mixture.
+  #   scale: a (p x groups) matrix of scales for each mixture.
+  # ***Note***:
+  #   p and groups are not arguments, instead they are determined by the input. 
+  # Returns: 
+  #   Matrix of components.
+  #   Matrix of the simulated data. 
+  p <- nrow(location); groups <- ncol(location)
+  
+  parameter_array <- array(0, c(p, groups, 3))
+  dimnames(parameter_array)[[3]] <- c("MixingProportions", "Location", "Scale")
+  
+  parameter_array[,, "MixingProportions"] <- mixing_proportions
+  parameter_array[,, "Location"] <- location
+  parameter_array[,, "Scale"] <- scale
+  
+  data_matrix <- components_matrix <- matrix(0, nrow = N, ncol = p)
+  
+  components <-
+    sapply(1:p, function(i)
+      components_matrix[, i] <-
+        sample(
+          1:groups,
+          prob = parameter_array[i, , "MixingProportions"],
+          size = N,
+          replace = TRUE
+        ))
+  simulated_data <- sapply(1:p, function(i)
+    data_matrix[, i] <-
+      rbeta(
+        N,
+        parameter_array[i, , "Location"][components[, i]] / parameter_array[i, , "Scale"][components[, i]] + 1,
+        (1 - parameter_array[i, , "Location"][components[, i]]) / parameter_array[i, , "Scale"][components[, i]] + 1
+      ))
+  list(components = components, simulated_data = simulated_data) 
+}
+
 
