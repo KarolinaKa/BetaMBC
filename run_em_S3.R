@@ -13,6 +13,7 @@
 
 source('run_em.R')
 
+
 summary.BetaEM <- function(x) {
   # Summary of run_em output.
   #
@@ -22,35 +23,16 @@ summary.BetaEM <- function(x) {
   # Summary of BetaEM object.
   stopifnot(inherits(x, 'BetaEM'))
   if (x$Groups == 1) {
-    cat(paste('Number of component densities:', x$Groups), sep = '\n')
-    cat(paste('Number of estimated parameters:', 2), sep = '\n')
-    cat(paste('Maximum log likelihood:', max(x$LogLikelihood)), sep = '\n')
-    cat(sep = '\n')
-    
-    cat(paste('BIC:', x$BIC), sep = '\n')
-    cat(paste('AIC:', x$AIC), sep = '\n')
-    cat(sep = '\n')
-    
     cat('-- Final density parameters  -- \n', sep = '\n')
     cat('Location \n')
     cat(x$Theta[1], '\n')
     cat(sep = '\n')
     cat('Scale \n')
     cat(x$Theta[2], '\n')
-    cat(sep = '\n')
     
   } else {
     cat(paste('EM iterations until convergence:', x$Iterations),
         sep = '\n')
-    cat(sep = '\n')
-    
-    cat(paste('Number of component densities:', x$Groups), sep = '\n')
-    cat(paste('Number of estimated parameters:', 3 * x$Groups - 1), sep = '\n')
-    cat(paste('Maximum log likelihood:', max(x$LogLikelihood)), sep = '\n')
-    cat(sep = '\n')
-    
-    cat(paste('BIC:', x$BIC), sep = '\n')
-    cat(paste('AIC:', x$AIC), sep = '\n')
     
     cat(sep = '\n')
     cat('-- Final mixture parameters  -- \n', sep = '\n')
@@ -63,6 +45,14 @@ summary.BetaEM <- function(x) {
     cat('Mixing Proportions \n')
     cat(x$MixingProportions, '\n')
   }
+  cat(sep = '\n')
+  cat(paste('Number of component densities:', x$Groups), sep = '\n')
+  cat(paste('Number of estimated parameters:', 3 * x$Groups - 1), sep = '\n')
+  cat(paste('Maximum log likelihood:', max(x$LogLikelihood)), sep = '\n')
+  cat(sep = '\n')
+  
+  cat(paste('BIC:', x$BIC), sep = '\n')
+  cat(paste('AIC:', x$AIC), sep = '\n')
 }
 
 
