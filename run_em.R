@@ -32,8 +32,7 @@ run_em <- function(data,
   
   if (groups == 1) {
     theta <- initial_values
-    log_likelihood[1] <-
-      -max_me(theta, data = data, groups = groups)
+    log_likelihood[1] <- sum(log(dbeta.rep(data, theta[1], theta[2])))
     optim_theta <-
       c(inv_location_constraint(theta[1]), log(theta[2]))
     maximise <-
@@ -46,13 +45,8 @@ run_em <- function(data,
     }
     theta <-
       c(location_constraint(maximise$par[1]), exp(maximise$par[2]))
-    log_likelihood[2] <-
-      -max_me(theta, data = data, groups = groups)
+    log_likelihood[2] <- sum(log(dbeta.rep(data, theta[1], theta[2])))
     
-    if (log_likelihood[2] < log_likelihood[1]) {
-      warning("Convergence to local maximum.")
-    }
-
     iterations <- 2  # 1 + initial values
     
   } else {
@@ -131,7 +125,7 @@ run_em <- function(data,
       }
       iterations <- iterations + 1
       if (iterations == max_iterations + 1) {
-        warning("Max iteration limit has been reached without convergence")
+        stop(paste("Max iteration limit", max_iterations, "has been reached without convergence"))
       }
     }
   }
@@ -162,9 +156,9 @@ run_em <- function(data,
     )
   }
   
-  cat('Object of class "BetaEM" \n')
-  cat('======================== \n')
-  cat('Available components \n')
+  cat("Object of class 'BetaEM' \n")
+  cat("======================== \n")
+  cat("Available components \n")
   print(names(output))
   
   class(output) <- "BetaEM"
