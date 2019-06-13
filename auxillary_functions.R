@@ -20,28 +20,25 @@
 
 simulate_beta <-
   function(N,
-           mixing_proportions,
            location,
            scale,
-           groups) {
+           groups,
+           mixing_proportions) {
     # Returns random draws from the reparametrised beta density.
     #
     # Args:
     #   N: number of draws required.
-    #   mixing_proportions: mixing proportions vector of length groups.
     #   location: mode vector of length groups.
     #   scale: spread parameter (analagous to variance in Gaussian setting) vector of length groups.
     #   groups: number of groups.
+    #   mixing_proportions: mixing proportions vector of length groups.
     # Returns:
     #   Vector of components.
     #   Random draws from the reparametrised beta density.
     
     # error handling
-    stopifnot(all(length(mixing_proportions) == groups, length(location) == groups, length(scale) == groups))
+    stopifnot(all(length(location) == groups, length(scale) == groups))
     
-    if (sum(mixing_proportions) != 1 ) {
-      stop("Vector of mixing proportions must sum to 1.")
-    }
     if (any(location < 0 | location > 1)) {
       stop("Entries in the location vector must be between 0 and 1.")
     }
@@ -50,8 +47,19 @@ simulate_beta <-
     }
     
     if (groups == 1) {
-      simulated_data <- rbeta(N, location / scale + 1, (1 - location) / scale + 1)
+      simulated_data <-
+        rbeta(N, location / scale + 1, (1 - location) / scale + 1)
+      output <- list(
+        SimulatedData = simulated_data,
+        Location = location,
+        Scale = scale
+      )
     } else {
+      stopifnot(length(mixing_proportions) == groups)
+      if (sum(mixing_proportions) != 1) {
+        stop("Vector of mixing proportions must sum to 1.")
+      }
+      
       components <-
         sample(1:groups,
                prob = mixing_proportions,
@@ -59,8 +67,16 @@ simulate_beta <-
                replace = TRUE)
       simulated_data <-
         rbeta(N, location[components] / scale[components] + 1, (1 - location[components]) / scale[components] + 1)
-      list(components = components, simulated_data = simulated_data)
+      output <- list(
+        Components = components,
+        SimulatedData = simulated_data,
+        MixingProportions = mixing_proportions,
+        Location = location,
+        Scale = scale
+      )
     }
+    class(output) <- "Simulation"
+    return(output)
   }
 
 dbeta.rep <-
@@ -212,14 +228,18 @@ permute_me <- function(x) {
   # Calculates all vector permutations.
   #
   # Args:
-  #   x: number of groups used to create the vector 1:x.
+  #   x: a number used to create 1:x.
   # Returns:
-  #   Permutation matrix (number of permutations x groups).
+  #   Permutation matrix (number of permutations of 1:x).
+  
+  k <- list()
+  k <- lapply(1:x, function(i) k[[i]] <- 1:x)
+  
   combination_matrix <-
-    expand.grid(1:x, 1:x, 1:x)
+    expand.grid(k)
   permutation_matrix <-
     combination_matrix[apply(combination_matrix, 1, function(i)
-      length(unique(i)) == 3),]
+      length(unique(i)) == x),]
   
   row.names(permutation_matrix) <- NULL
   colnames(permutation_matrix) <- NULL
@@ -270,7 +290,7 @@ simulate_p_betas <- function(N, mixing_proportions, location, scale) {
         parameter_array[i, , "Location"][components[, i]] / parameter_array[i, , "Scale"][components[, i]] + 1,
         (1 - parameter_array[i, , "Location"][components[, i]]) / parameter_array[i, , "Scale"][components[, i]] + 1
       ))
-  list(components = components, simulated_data = simulated_data) 
+  list(Components = components, SimulatedData = simulated_data) 
 }
 
 
