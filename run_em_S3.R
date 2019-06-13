@@ -11,7 +11,7 @@
 ## date: 10 June 2019                       ##
 ##############################################
 
-source("run_em.R")
+source('run_em.R')
 
 summary.BetaEM <- function(x) {
   # Summary of run_em output.
@@ -19,28 +19,50 @@ summary.BetaEM <- function(x) {
   # Args:
   #   x: object of class BetaEM.
   # Returns:
-  # Number of iterations until convergence.
-  # Final mixture parameters (location, scale and mixin proportions).
-  stopifnot(inherits(x, "BetaEM"))
+  # Summary of BetaEM object.
+  stopifnot(inherits(x, 'BetaEM'))
   if (x$Groups == 1) {
-    stop("No summary function available.")
+    cat(paste('Number of component densities:', x$Groups), sep = '\n')
+    cat(paste('Number of estimated parameters:', 2), sep = '\n')
+    cat(paste('Maximum log likelihood:', max(x$LogLikelihood)), sep = '\n')
+    cat(sep = '\n')
+    
+    cat(paste('BIC:', x$BIC), sep = '\n')
+    cat(paste('AIC:', x$AIC), sep = '\n')
+    cat(sep = '\n')
+    
+    cat('-- Final density parameters  -- \n', sep = '\n')
+    cat('Location \n')
+    cat(x$Theta[1], '\n')
+    cat(sep = '\n')
+    cat('Scale \n')
+    cat(x$Theta[2], '\n')
+    cat(sep = '\n')
+    
+  } else {
+    cat(paste('EM iterations until convergence:', x$Iterations),
+        sep = '\n')
+    cat(sep = '\n')
+    
+    cat(paste('Number of component densities:', x$Groups), sep = '\n')
+    cat(paste('Number of estimated parameters:', 2 * (3 * x$Groups - 1)), sep = '\n')
+    cat(paste('Maximum log likelihood:', max(x$LogLikelihood)), sep = '\n')
+    cat(sep = '\n')
+    
+    cat(paste('BIC:', x$BIC), sep = '\n')
+    cat(paste('AIC:', x$AIC), sep = '\n')
+    
+    cat(sep = '\n')
+    cat('-- Final mixture parameters  -- \n', sep = '\n')
+    cat('Location \n')
+    cat(x$Theta[, 1], '\n')
+    cat(sep = '\n')
+    cat('Scale \n')
+    cat(x$Theta[, 2], '\n')
+    cat(sep = '\n')
+    cat('Mixing Proportions \n')
+    cat(x$MixingProportions, '\n')
   }
-  
-  location <- x$Theta[, 1]
-  scale    <- x$Theta[, 2]
-  
-  cat('EM iterations until convergence \n')
-  print(x$Iterations)
-  cat(sep = '\n')
-  cat('-- Final mixture parameters  -- \n', sep = "\n")
-  cat("Location \n")
-  print(location)
-  cat(sep = "\n")
-  cat("Scale \n")
-  print(scale)
-  cat(sep = "\n")
-  cat("Mixing Proportions \n")
-  print(x$MixingProportions)
 }
 
 
@@ -54,7 +76,7 @@ plot.BetaEM <- function(x, groups = x$Groups) {
   # Returns:
   #   Histogram of data with estimated density overlay.
   #   Plot of the log likelihood vs. number of iterations.
-  stopifnot(inherits(x, "BetaEM"))
+  stopifnot(inherits(x, 'BetaEM'))
   
   evaluation_points  <- seq(0, 1, length.out = 1000)
   
@@ -80,22 +102,22 @@ plot.BetaEM <- function(x, groups = x$Groups) {
     freq = F,
     xlim = c(0, 1),
     ylim = c(0, 10),
-    xlab = "",
-    main = "Data histogram with estimated density overlay",
+    xlab = '',
+    main = 'Data histogram with estimated density overlay',
     cex.main = 0.9
   )
   lines(evaluation_points,
         estimated_density,
-        type = "l",
-        col = "red")
+        type = 'l',
+        col = 'red')
   
   # plot 2
   plot(
     x$LogLikelihood,
-    type = "b",
-    xlab = "Iterations",
-    ylab = "Log Likelihood",
-    main = "Log likelihood vs. number of iterations",
+    type = 'b',
+    xlab = 'Iterations',
+    ylab = 'Log Likelihood',
+    main = 'Log likelihood vs. number of iterations',
     cex.main = 0.9
   )
   
@@ -108,7 +130,7 @@ label_switch <-
             SimulationComponents,
             groups = x$Groups,
             N = 1000) {
-    UseMethod("label_switch", x)
+    UseMethod('label_switch', x)
   }
 
 label_switch.BetaEM <-
@@ -125,9 +147,9 @@ label_switch.BetaEM <-
     #   N: length of data.
     # Returns:
     #   true_labels: correct label vector.
-    stopifnot(inherits(x, "BetaEM"))
+    stopifnot(inherits(x, 'BetaEM'))
     if (groups == 1) {
-      stop("label_switch not applicable.")
+      stop('label_switch not applicable.')
     }
     
     permutation_matrix <- permute_me(groups)
@@ -169,7 +191,7 @@ label_switch.BetaEM <-
 
 beta_clus <-
   function (x, plot = TRUE) {
-    UseMethod("beta_clus", x)
+    UseMethod('beta_clus', x)
   }
 
 beta_clus.BetaEM <- function(x, plot = TRUE) {
@@ -181,9 +203,9 @@ beta_clus.BetaEM <- function(x, plot = TRUE) {
   #   Class memberships.
   #   Class membership uncertainties.
   #   Plot of class membership uncertainties
-  stopifnot(inherits(x, "BetaEM"))
+  stopifnot(inherits(x, 'BetaEM'))
   if (x$Groups == 1) {
-    stop("beta_clus not applicable.")
+    stop('beta_clus not applicable.')
   }
   class_probabilities <- x$ClassProbabilities
   class_membership_uncertainties <-
@@ -194,14 +216,14 @@ beta_clus.BetaEM <- function(x, plot = TRUE) {
   if (plot == TRUE) {
     plot(
       class_membership_uncertainties ~ x$Data,
-      type = "h",
-      xlab = "",
+      type = 'h',
+      xlab = '',
       xlim = c(0, 1), 
       ylim = c(0, 1),
-      ylab = "Uncertainty",
-      main = "Cluster membership uncertainties (black lines) with estimated density overlay",
+      ylab = 'Uncertainty',
+      main = 'Cluster membership uncertainties (black lines) with estimated density overlay',
       cex.main = 0.9, 
-      sub = "Note: Estimated density is scaled to have unit maximum.",
+      sub = 'Note: Estimated density is scaled to have unit maximum.',
       cex.sub = 0.8
     )
     
@@ -211,17 +233,17 @@ beta_clus.BetaEM <- function(x, plot = TRUE) {
     estimated_density  <-
       sapply(1:x$Groups, function(j)
         dbeta.rep(evaluation_points, location[j], scale[j])) %*% x$MixingProportions
-    lines(evaluation_points, estimated_density / max(estimated_density), col = "red")
+    lines(evaluation_points, estimated_density / max(estimated_density), col = 'red')
   }
   
-  list("ClassMemberships" = class_memberships,
-       "ClassMembershipUncertainties" = class_membership_uncertainties)
+  list('ClassMemberships' = class_memberships,
+       'ClassMembershipUncertainties' = class_membership_uncertainties)
 }
 
 simulation_beta_clus <-
   function (x,
             SimulatioionComponents) {
-    UseMethod("simulation_beta_clus", x)
+    UseMethod('simulation_beta_clus', x)
   }
 
 simulation_beta_clus.BetaEM <- function(x, SimulationComponents) {
@@ -234,9 +256,9 @@ simulation_beta_clus.BetaEM <- function(x, SimulationComponents) {
   #   Cross tabulation of simulated data components and solution componenets (class memberships).
   #   Adjusted Rand Index (ARI).
   #   Class memberships.
-  stopifnot(inherits(x, "BetaEM"))
+  stopifnot(inherits(x, 'BetaEM'))
   if (groups == 2) {
-    stop("beta_clus not applicable.")
+    stop('beta_clus not applicable.')
   }
   
   true_labels <- label_switch(x, SimulationComponents)
@@ -249,15 +271,15 @@ simulation_beta_clus.BetaEM <- function(x, SimulationComponents) {
       ifelse(class_memberships == 2, true_labels[2], true_labels[3])
     )
   cross_tab <-
-    table(" " <-
+    table(' ' <-
             SimulationComponents,
-          " " <- relabelled_class_memberships)
+          ' ' <- relabelled_class_memberships)
   ARI <- adjusted_rand(cross_tab)
   
   list(
-    "CrossTab" = cross_tab,
-    "AdjustedRandIndex" = ARI,
-    "ClassMemberships" = relabelled_class_memberships
+    'CrossTab' = cross_tab,
+    'AdjustedRandIndex' = ARI,
+    'ClassMemberships' = relabelled_class_memberships
   )
   
 }
