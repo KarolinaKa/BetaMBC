@@ -17,9 +17,9 @@ plot(x2)
 clus_solution <- beta_clus(x2)
 
 # Possible 3 clusters 
-test_data <- as.vector(t(NonBasalLike[106,]))
+test_data <- as.vector(t(NonBasalLike[81,]))
 
-x3 <- run_em(test_data, groups = 3, convergence_limit = 0.0001)
+x3 <- run_em(test_data, groups = 3, max_iterations = 500, convergence_limit = 0.001)
 summary(x3)
 plot(x3)
 clus_solution <- beta_clus(x3)
@@ -76,7 +76,7 @@ clus_solution$AdjustedRandIndex
 # groups = 3
 # )
 
-x <- run_em(simulation$SimulatedData, groups = 3, convergence_limit = 0.001)
+x <- run_em(simulation$SimulatedData, groups = 3, max_iterations = 500)
 summary(x)
 plot(x)
 simulation_plot(x, simulation)
