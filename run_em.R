@@ -1,5 +1,6 @@
 ##############################################
 ## run_em function (EM algoritm)            ##
+## Density Estimation                       ##
 ## author: karolina.kulec@ucdconnect.ie     ##
 ## date: June 2019                          ##
 ##############################################
@@ -19,9 +20,7 @@ run_em <- function(data,
   #   max_iterations: maximum number of algorithm iterations.
   #   random_initialisation_runs: the number of random runs to be passed to function initialise_me.
   # Returns:
-  #   The number of iterations until convergence.
-  #   The parameters (theta) and mixing proportions at final iteration or convergence.
-  #   AIC and BIC for the log likelihood at final iteration or convergence.
+  #   output: output list of class 'BetaEM'
   
   N <- length(data)
   log_likelihood <- NULL
@@ -125,7 +124,7 @@ run_em <- function(data,
       }
       iterations <- iterations + 1
       if (iterations == max_iterations + 1) {
-        stop(paste("Max iteration limit", max_iterations, "has been reached without convergence"))
+        warning(paste("Max iteration limit", max_iterations, "has been reached without convergence"))
       }
     }
   }
