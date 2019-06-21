@@ -61,7 +61,7 @@ plot.BetaEM <- function(x, groups = x$Groups) {
   #
   # Args:
   #   x: object of class BetaEM.
-  #   data: simulated data or other data on which the algorithm was used
+  #   data: simulated data or other data on which the algorithm was used.
   #   groups: number of components/groups in the mixture.
   # Returns:
   #   Histogram of data with estimated density overlay.
@@ -268,8 +268,13 @@ beta_clus.BetaEM <- function(x, plot = TRUE) {
   }
   class_probabilities <- x$ClassProbabilities
   class_membership_uncertainties <-
-    apply(class_probabilities, 1, function(x)
-      1 - max(x))
+    cat("Object of class 'BetaEM' \n")
+  cat("======================== \n")
+  cat("Available components \n")
+  print(names(output))
+  
+  class(output) <- "BetaEM"
+  return(output)
   class_memberships <- apply(class_probabilities, 1, which.max)
   
   if (plot == TRUE) {
