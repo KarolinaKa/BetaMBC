@@ -4,8 +4,6 @@
 ## date: June 2019                          ##
 ##############################################
 
-# Code is semi-specific to the DNA methylation data provided in the repo. 
-
 ranking <- function(x,
                     y,
                     RowNames = NULL) 
