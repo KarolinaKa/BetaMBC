@@ -5,7 +5,7 @@
 ## date: June 2019                          ##
 ##############################################
 
-source("simulation.R")
+source("auxillary_functions.R")
 
 run_em <- function(data,
                    groups,
