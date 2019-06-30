@@ -120,10 +120,10 @@ plot.MultiBetaClus <- function(x,
     cluster_means[[1]],
     xlim = c(0, 1),
     col = "royalblue",
+    main = "Cluster Means",
     angle = 45,
     density = 90,
     freq = freq,
-    main = "",
     xlab = expression(beta ~ value)
   )
   hist(
@@ -139,12 +139,6 @@ plot.MultiBetaClus <- function(x,
     col = "orangered",
     angle = 45,
     density = 90,
-    freq = freq,
-    add = T
-  )
-  hist(
-    cluster_means[[4]],
-    col = rgb(0, 1, 0, 3 / 4),
     freq = freq,
     add = T
   )
