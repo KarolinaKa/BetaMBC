@@ -7,47 +7,39 @@
 source("multi_beta_clus.R")
 source("ranking.R")
 
-BasalLike <- readRDS("FullBasalLike.rds")
-NonBasalLike <- readRDS("FullNonBasalLike.rds")
+cohortA <- readRDS("FullBasalLike.rds")
+cohortB <- readRDS("FullNonBasalLike.rds")
 
 location <- c(0, 0.5, 1)
 scale <- c(0.1, 0.1, 0.1)
 
-set.seed(13323)
+cluster_cohortA <-
+  multi_beta_clus(cohortA, groups = 3, location, scale)
 
-cluster_BasalLike <-
-  multi_beta_clus(BasalLike, groups = 3, location, scale)
+cluster_cohortB <-
+  multi_beta_clus(cohortB, groups = 3, location, scale)
 
-cluster_NonBasalLike <-
-  multi_beta_clus(NonBasalLike, groups = 3, location, scale)
-
-
-table(
-  "BasalLike" = cluster_BasalLike$ClusterMemberships,
-  "NonBasalLike" = cluster_NonBasalLike$ClusterMemberships
+tab <- table(
+  "cohortA" = cluster_cohortA$ClusterMemberships,
+  "cohortB" = cluster_cohortB$ClusterMemberships
 )
+tab
 1 - sum(diag(tab)) / sum(tab)
 
 par(mfrow = c(1, 2))
-plot(cluster_BasalLike, freq = T)
-plot(cluster_NonBasalLike, freq = T)
+plot(cluster_cohortA, freq = T)
+plot(cluster_cohortB, freq = T)
 par(mfrow = c(1, 1))
-
-mean(cluster_BasalLike$ClusterUncertainties)
-median(cluster_BasalLike$ClusterUncertainties)
-
-mean(cluster_NonBasalLike$ClusterUncertainties)
-median(cluster_NonBasalLike$ClusterUncertainties)
 
 par(mfrow = c(1, 2), oma = c(2, 0, 2, 0))
 hist(
-  cluster_BasalLike$ClusterUncertainties,
+  cluster_cohortA$ClusterUncertainties,
   xlim = c(0, 0.7),
   xlab = "Uncertainty",
   main = "Cohort A"
 )
 hist(
-  cluster_NonBasalLike$ClusterUncertainties,
+  cluster_cohortB$ClusterUncertainties,
   xlim = c(0, 0.7),
   xlab = "Uncertainty",
   main = "Cohort B"
@@ -65,12 +57,13 @@ mtext(
   cex = 1,
   font = 3
 )
+par(mfrow = c(1, 1), oma = c(0, 0, 0, 0))
 
 ranks <-
-  ranking(cluster_BasalLike,
-          cluster_NonBasalLike,
-          RowNames = row.names(BasalLike))
-plot(ranks, Rank = 1, BasalLike, NonBasalLike)
+  ranking(cluster_cohortA,
+          cluster_cohortB,
+          RowNames = row.names(cohortA))
+plot(ranks, Rank = 1, cohortA, cohortB)
 
 par(mfrow = c(1, 2), oma = c(2, 0, 2, 0))
 hist(ranks[, 1],
@@ -94,6 +87,8 @@ mtext(
   cex = 1,
   font = 3
 )
+par(mfrow = c(1, 1), oma = c(0, 0, 0, 0))
+
 summary(ranks[, 1])
 summary(ranks[, 2])
 
