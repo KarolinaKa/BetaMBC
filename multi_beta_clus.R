@@ -36,6 +36,7 @@ multi_beta_clus <- function(data, groups, location, scale) {
   location <- array(location, c(groups, p))
   scale <- array(scale, c(groups, p))
   
+  set.seed(7)
   initial_cluster <- kmeans(data, groups)
   z <- array(0, c(n, groups))
   z <- sapply(1:groups, function(i)
