@@ -36,7 +36,8 @@ hist(
   cluster_cohortA$ClusterUncertainties,
   xlim = c(0, 0.7),
   xlab = "Uncertainty",
-  main = "Cohort A"
+  main = "Cohort A", 
+  ylim = c(0, 12000)
 )
 hist(
   cluster_cohortB$ClusterUncertainties,
@@ -51,7 +52,7 @@ mtext(
   font = 2
 )
 mtext(
-  "Max. uncertainty is 0.6666",
+  "Max. possible uncertainty is 1 - 1/G = 0.67",
   side = 1,
   outer = TRUE,
   cex = 1,
@@ -69,11 +70,13 @@ par(mfrow = c(1, 2), oma = c(2, 0, 2, 0))
 hist(ranks[, 1],
      xlim = c(0, 0.7),
      xlab = "Uncertainty",
-     main = "Cohort A")
+     main = "Cohort A",
+     ylim = c(0, 500))
 hist(ranks[, 2],
      xlim = c(0, 0.7),
      xlab = "Uncertainty",
-     main = "Cohort B")
+     main = "Cohort B",
+     ylim = c(0, 500))
 mtext(
   "Uncertainty Histograms",
   outer = TRUE,
@@ -81,7 +84,7 @@ mtext(
   font = 2
 )
 mtext(
-  "Max. uncertainty is 0.6666",
+  "Max. possible uncertainty is 1 - 1/G = 0.67",
   side = 1,
   outer = TRUE,
   cex = 1,
