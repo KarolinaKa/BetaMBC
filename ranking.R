@@ -9,7 +9,7 @@ ranking <- function(x,
                     RowNames = NULL) 
   {
   # Given two clustering solutions from multi_beta_clus finds observations which belong to different clusters in each.
-  # Ranks each observation based in increasing order of clustering uncertainty. 
+  # Ranks each observation based on increasing order of clustering uncertainty. 
   # 
   # Args:
   #   x: object of class MultiBetaClus.
