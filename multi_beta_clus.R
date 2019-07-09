@@ -36,11 +36,13 @@ multi_beta_clus <- function(data, groups, location, scale) {
   location <- array(location, c(groups, p))
   scale <- array(scale, c(groups, p))
   
-  set.seed(7)
-  initial_cluster <- kmeans(data, groups)
+  centers <- kmeans(data, groups)$centers
+  ordered_centers <- apply(centers, 2, sort)
+  initial_cluster <- kmeans(data, centers = ordered_centers)$cluster
+  
   z <- array(0, c(n, groups))
-  z <- sapply(1:groups, function(i)
-    z[, i] <- ifelse(initial_cluster$cluster == i, 1, 0))
+  z <- sapply(1:groups, function(g)
+    z[, g] <- ifelse(initial_cluster == g, 1, 0))
   
   mixing_proportions[, 1] <- apply(z, 2, sum) / n
   
