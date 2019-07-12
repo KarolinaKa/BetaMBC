@@ -5,8 +5,9 @@
 ##  2. dbeta_rep                            ##
 ##  3. initialise_me                        ##
 ##  4. location_constraint and its inverse  ##
-##  5. max_me                               ##  
-##  6. simulate_p_betas (generalisation of  ## 
+##  5. max_me  (Density est. scenario)      ##
+##  6. max_me2 (MBC scenario)               ##
+##  7. simulate_p_betas (generalisation of  ## 
 ##                       simulate_beta)     ## 
 ##                                          ##
 ## Other functions                          ##  
@@ -203,6 +204,34 @@ max_me <- function(theta, data, groups, z) {
   }
   return(-ind)
 }
+
+max_me2 <- function(theta, data, groups, z) {
+  # Defines the objective function to be maximised. Model based clustering. 
+  #
+  # Args:
+  #   theta: vector of parameters to be maximised over.
+  #   data: data to be clustered.
+  #   z: (N x groups) posterior probability matrix.
+  #   groups: number of components/groups in the mixture.
+  # Returns:
+  #   Negative objective function output (because optim minimises by default).
+  
+  ind <- array(0, c(n, groups, p))
+  for (j in 1:p) {
+    for (i in 1:(groups*p)) {
+      ind[, , j] <-
+        sapply(1:groups, function(g)
+          z[, g] %*% log(
+            dbeta.rep(data[, j], location = location_constraint(theta[i]), scale = scale[g, j])
+          ))
+    }
+  }
+  ind <- sum(apply(ind, 1:2, sum))
+  return(-ind)
+}
+
+
+
 
 adjusted_rand <- function(table) {
   # Calculates the Adjusted Rand Index (Wikipedia definition) for two clustering solutions.
