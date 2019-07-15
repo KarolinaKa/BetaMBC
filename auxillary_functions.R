@@ -222,7 +222,7 @@ max_me2 <- function(theta, data, groups, z) {
       ind[, , j] <-
         sapply(1:groups, function(g)
           z[, g] %*% log(
-            dbeta.rep(data[, j], location = location_constraint(theta[i]), scale = scale[g, j])
+            dbeta.rep(data[, j], location = location_constraint(theta[i]), scale = scale[g])
           ))
     }
   }
