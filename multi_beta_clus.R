@@ -53,6 +53,7 @@ multi_beta_clus <- function(data, groups, location, scale) {
   }
   log_likelihood[1] <- sum(log(apply(density_array, 1:2, sum)))
   
+  # E-step
   by_group_array <- array(0, c(n, groups, p))
   for (j in 1:p) {
     by_group_array[, , j] <-
@@ -62,16 +63,13 @@ multi_beta_clus <- function(data, groups, location, scale) {
   by_group <- apply(by_group_array, 1:2, sum)
   prior_mix <-  apply(by_group, 1, sum)
   z <- by_group / rep(prior_mix, groups)
-  
   mixing_proportions[, 2] <- apply(z, 2, sum) / n
-  
   
   density_array <- array(0, c(n, groups, p))
   for (j in 1:p) {
     density_array[, , j] <- sapply(1:groups, function(g)
       dbeta.rep(data[, j], location = location[g, 1], scale = scale[g, 1])) %*% mixing_proportions[, 2]
   }
-  
   log_likelihood[2] <- sum(log(apply(density_array, 1:2, sum)))
   
   cluster_memberships <- apply(z, 1, which.max)
@@ -96,6 +94,7 @@ multi_beta_clus <- function(data, groups, location, scale) {
   class(output) <- "MultiBetaClus"
   return(output)
 }
+
 
 
 plot.MultiBetaClus <- function(x,
