@@ -205,7 +205,7 @@ max_me <- function(theta, data, groups, z) {
   return(-ind)
 }
 
-max_me2 <- function(theta, data, groups, z) {
+max_me2 <- function(theta, data, groups, z, scale) {
   # Defines the objective function to be maximised. Model based clustering. 
   #
   # Args:
@@ -215,6 +215,9 @@ max_me2 <- function(theta, data, groups, z) {
   #   groups: number of components/groups in the mixture.
   # Returns:
   #   Negative objective function output (because optim minimises by default).
+  
+  n <- nrow(data)
+  p <- ncol(data)
   
   ind <- array(0, c(n, groups, p))
   for (j in 1:p) {

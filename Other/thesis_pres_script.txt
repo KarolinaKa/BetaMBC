@@ -1,0 +1,188 @@
+###################### Slide 1 ######################
+
+Good Afternoon, 
+Thank you for coming today. 
+My name is Karolina and I am here to talk about my thesis project on 'Model based clustering using a finite mixture of unimodal beta densities'.
+
+###################### Slide 2 ######################
+
+Let's begin with an introduction. 
+
+###################### Slide 3 ######################
+
+To understand the context of this project, we first need to understand DNA methylation.
+
+You can think of DNA methylation as an extra layer of information found on the DNA. 
+
+While your DNA dictates your "nature", DNA methylation reflects the effect of your environment, "nurture". 
+
+DNA methylation occurs in areas of the DNA known as CpG sites. These are like docking stations on the DNA where methylation can occur. 
+
+DNA methylation is measured using beta values which range from 0 to 1. With 0 indicating no methylation and 1 full methylation. 
+
+###################### Slide 4 ######################
+
+There are three common methylation patterns we will consider. 
+
+Hypomethylation, i.e. low levels of methylation. 
+
+###################### Slide 5 ######################
+
+Hypermethylation, i.e. high levels of methylation. 
+
+###################### Slide 6 ######################
+
+Everything in between. 
+
+###################### Slide 7 ######################
+
+We know that levels of DNA methylation are associated with human disease. 
+
+So our objective is to identify which CpG sites show different DNA methylation patterns between individuals with different disease status, i.e. sick or healthy. 
+
+For example, we may discover that hypermethylation at aparticular CpG site is associated with a certain type of breastcancer.
+
+The broad question of interest is, 
+which CpG sites can be used as bio-markers to aid in quickerdiagnosis and the development of a tailored treatment plan?
+
+###################### Slide 8 ######################
+
+Let's move on to the state of the art approach. 
+
+###################### Slide 9 ######################
+
+The research body which usually collects DNA methylation data is known as EWAS. 
+
+They carry out their screening on a site by site basis using univariate tests like the t-test. 
+
+There are two main caveats. 
+Multiple testing problems. 
+And having to transform the beta values prior to analysis to meet the assumption of normality for the t-test. 
+
+###################### Slide 10 ######################
+
+Beta values are transformed using equation (1) to M values, which are normally distributed. 
+In general this has the effect of:
+Obscuring the hypo and hyper methylation patterns and 
+limiting the intuitive interpretability of the results. 
+
+###################### Slide 11 ######################
+
+This slide shows the effect this transformation has on real DNA methylation data. 
+
+In the left panel we have a histogram of raw beta values, 
+and on the right are the same values, transformed.
+
+###################### Slide 12 ###################### 
+
+We had a brief look at the current screening approach. Now, let's move onto the proposed approach developed as part of this thesis. 
+
+###################### Slide 13 ###################### 
+
+Instead of carrying out site-by-site tests, we will use model based clustering. 
+
+Our model is a finite mixture of 3 unimodal Beta densities of the standard form. 
+
+We assign each CpG site into one of the 3 clusters reflecting the common methylation patterns we have seen in the previous slides and repeat this step for the number of patient groups/cohorts we are testing. 
+
+We follow this by finding differences in cluster memberships between the cohorts. 
+
+###################### Slide 14 ###################### 
+
+Methods
+
+###################### Slide 15 ######################
+
+The beta distribution is the backbone of our approach. 
+The beta distribution is a very versatile function used to model continuous variables with compact support defined on the interval S = [0, 1]. 
+
+Its shape is governed by two parameters, alpha and beta. 
+
+Our focus is on the subclass of unimodal beta densities. 
+
+We reparametrise the function in terms of the mode, m and scale parameter, v related to the spread of the density around m. 
+
+And you can think of m and v as analogous to mu and sigma2 in the Gaussian scenario. 
+
+###################### Slide 16 ######################
+
+This is how the reparametrised beta density looks like for different values of m. You can see our density has one peak only. 
+
+###################### Slide 17 ######################
+
+We began our work with the univariate case. This is the case where we have DNA methylation data of one individual. 
+
+The EM algorithm was used to estimate the density parameters and cluster memberships. 
+
+We arrive at the standard form of the complete data log likelihood for the incomplete data problem in the mixture setting. 
+
+It is worth noting that no closed form solution for the M step exists so numerical optimisation was used at each iteration. 
+
+###################### Slide 18 ######################
+
+After coding up the algorithm for the univariate case, we began work on extending the algorithm to a multivariate scenario. This is the case where we have DNA methylation data of p individuals. 
+
+No strictly multivariate generalisation of the Beta distribution.
+Instead, we assume that conditional on their clustermembership, each CpG site exhibits a methylation patternindependent of the others.
+
+The only difference in the complete log likelihoods is the addition of this summation term here which arises from multiplying p unimodal beta densities in the complete likelihood. 
+
+The good news is that domain knowledge allows us to fix theta, thus surpassing the computationally demanding M-step. Generally, we fix the modes of the mixture to 0, 0.5 and 1 while keeping v constant at around 0.1.
+
+###################### Slide 19 ######################
+
+We tested our method on some real data and these are some preliminary results. 
+
+###################### Slide 20 ######################
+
+Real DNA methylation data was used for this analysis. Cohort’s Aand B denote individuals diagnosed with different sub-types ofbreast cancer.
+Out of the 20,303 CpG sites analysed, 15.8% were found tobelong to different clusters in cohorts A and B.
+
+In the cross tabulation, it is worth looking at the off diagonal entries to spot the differently clustered CpG sites and where they lay in relation to one another. 
+
+###################### Slide 21 ######################
+
+For the most part the uncertainty is quite low and tails off around the maximum possible uncertainty of 0.67.
+
+###################### Slide 22 ######################
+
+For CpG sites found to be in different clusters between the two cohorts, the uncertainty is spread out more uniformly. 
+
+This is to be expected, since in general only a small proportion of CpG sites are in fact different. 
+
+We can use these uncertainties to rank the CpG sites in order of increasing uncertainty, leaving us with a list of CpG sites which are most likely to be different between the cohorts at the very top of the list. 
+
+###################### Slide 23 ######################
+
+The next and final plot shows one the CpG sites identified as having a different methylation pattern between the cohorts and a very low uncertainty
+.
+
+Cohort A is clearly hypermethylated at this CpG site while Cohort B has a uniform methylation pattern. 
+
+###################### Slide 24 ######################
+
+Next, we will look at how well the algorithm performs. 
+For 112 variables and 20k CpG sites, it takes an average of 7 seconds to run. 
+A 5 fold increase in variables increases run time by around 20 seconds. 
+The average is based on 20 runs of the algorithm for each array. 
+
+###################### Slide 25 ######################
+
+We will finish off with a slide on conclusion and future work.
+
+###################### Slide 26 ######################
+
+To conclude we will examine the advantages and limitations of the proposed method. 
+
+The obvious advantage is speed. 
+No multiple testing corrections required.Interpretability - there is no transformation required.Flexibility. If we want to find other methylation patterns, we can easily extend or modify the number of mixture components.
+However there are some limitations.Multimodal methylation patterns can be mis-classified.Sensitive to choice of mixture and initial clusters. Independence assumption may not hold when multiple CpG sitesare located on the same gene.
+
+###################### Slide 27 ######################
+
+While a lot of work has been done, there is still a long way to go. 
+
+Some of the planned future work includes:
+
+Introduce covariates to account for batch effects, age, gender etc.Test performance on larger arrays. Commonplace to probe>450,000 CpG sites per individual.Optimise and clean code.The write-up!
+
