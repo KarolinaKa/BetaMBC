@@ -18,6 +18,7 @@ run_em <- function(data,
   #   data: data vector believed to originate from a mixture of unimodal betas.
   #   groups: number of groups/components.
   #   max_iterations: maximum number of algorithm iterations.
+  #   convergence_limit: lack of progress measure indicating convergence of the algorithm.
   #   random_initialisation_runs: the number of random runs to be passed to function initialise_me.
   # Returns:
   #   output: output list of class 'BetaEM'
@@ -31,7 +32,8 @@ run_em <- function(data,
   
   if (groups == 1) {
     theta <- initial_values
-    log_likelihood[1] <- sum(log(dbeta.rep(data, theta[1], theta[2])))
+    log_likelihood[1] <-
+      sum(log(dbeta.rep(data, theta[1], theta[2])))
     optim_theta <-
       c(inv_location_constraint(theta[1]), log(theta[2]))
     maximise <-
@@ -44,7 +46,8 @@ run_em <- function(data,
     }
     theta <-
       c(location_constraint(maximise$par[1]), exp(maximise$par[2]))
-    log_likelihood[2] <- sum(log(dbeta.rep(data, theta[1], theta[2])))
+    log_likelihood[2] <-
+      sum(log(dbeta.rep(data, theta[1], theta[2])))
     
     iterations <- 2  # 1 + initial values
     
@@ -82,7 +85,7 @@ run_em <- function(data,
         cbind(inv_location_constraint(theta[, 1, r]), log(theta[, 2, r]))
       optim_vec <- numeric()
       for (i in 1:groups) {
-        optim_vec <- c(optim_vec, optim_theta[i, ])
+        optim_vec <- c(optim_vec, optim_theta[i,])
       }
       
       maximise <-
@@ -124,7 +127,13 @@ run_em <- function(data,
       }
       iterations <- iterations + 1
       if (iterations == max_iterations + 1) {
-        warning(paste("Max iteration limit", max_iterations, "has been reached without convergence"))
+        warning(
+          paste(
+            "Max iteration limit",
+            max_iterations,
+            "has been reached without convergence"
+          )
+        )
       }
     }
   }
@@ -165,11 +174,3 @@ run_em <- function(data,
 }
 
 
-# use microbenchmark to benchmark the function 
-
-## library(microbenchmark)
-## microbenchmark(initialise_me(simulated_data), times = 50)
-## 
-## Unit: seconds
-## expr                          min       lq     mean     median uq       max         neval
-## run_em(data = simulated_data) 7.36538 8.398256 9.578369 9.1256 10.37926 12.96472    50
