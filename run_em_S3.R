@@ -75,8 +75,8 @@ plot.BetaEM <- function(x, groups = x$Groups) {
       dbeta.rep(evaluation_points, x$Theta[1], x$Theta[2])
     
   } else {
-    location           <- x$Theta[, 1]
-    scale              <- x$Theta[, 2]
+    location <- x$Theta[, 1]
+    scale <- x$Theta[, 2]
     
     estimated_density  <-
       sapply(1:groups, function(j)
@@ -91,9 +91,12 @@ plot.BetaEM <- function(x, groups = x$Groups) {
     breaks = 25,
     freq = F,
     xlim = c(0, 1),
+    ylim = c(0, 5),
     xlab = '',
     main = 'Data histogram with estimated density overlay',
-    cex.main = 0.9
+    cex.main = 0.9, 
+    font.lab = 3,
+    font.main = 4
   )
   lines(evaluation_points,
         estimated_density,
@@ -108,7 +111,9 @@ plot.BetaEM <- function(x, groups = x$Groups) {
     xlab = 'Iterations',
     ylab = 'Log Likelihood',
     main = 'Log likelihood vs. number of iterations',
-    cex.main = 0.9
+    cex.main = 0.9, 
+    font.lab = 3,
+    font.main = 4
   )
   
   par(mfrow = c(1, 1))
@@ -151,15 +156,18 @@ simulation_plot <-
       breaks = 25,
       freq = F,
       xlim = c(0, 1),
-      xlab = '',
+      ylim = c(0, 6),
+      xlab = 'x',
       main = 'Data histogram with true and estimated density overlay',
-      cex.main = 0.9
+      cex.main = 0.9, 
+      font.lab = 3,
+      font.main = 4
     )
     lines(
       evaluation_points,
       estimated_density,
       type = 'l',
-      col = 'red',
+      col = 'orangered',
       lwd = 2
     )
     lines(
@@ -167,16 +175,7 @@ simulation_plot <-
       true_density,
       type = "l",
       lwd = 2,
-      lty = 2
-    )
-    legend(
-      "topright",
-      col = c("red", "black"),
-      lty = 1:2,
-      lwd = 2,
-      legend = c("Estimate", "True"),
-      cex = 0.8,
-      bty = "n"
+      col = "royalblue"
     )
   }
 
