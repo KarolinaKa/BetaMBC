@@ -8,7 +8,7 @@ The code is written in R and features:
 - EM Algorithm
 - S3 OOP
 
-ABSTRACT
+Abstract
 ----
 Diferentially methylated DNA regions are valuable biomarkers of human disease
 with potential in the feld of personalised medicine. There are three common methylation
