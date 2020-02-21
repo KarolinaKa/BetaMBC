@@ -9,6 +9,7 @@ The code is written in R and features:
 - S3 OOP
 
 ABSTRACT
+----
 Diferentially methylated DNA regions are valuable biomarkers of human disease
 with potential in the feld of personalised medicine. There are three common methylation
 profiles described in literature: hypomethylation, hemimethylation and hypomethylation.
