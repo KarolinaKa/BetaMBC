@@ -1,7 +1,7 @@
 BetaMBC
 -----
 
-This is the git repostitory for my Masters Thesis project.
+This is the git repostitory for my Masters Thesis project (MSc Statistics).
 The code is written in R and features:
 - Model based clustering
 - Finite mixtures of unimodal beta distributions
